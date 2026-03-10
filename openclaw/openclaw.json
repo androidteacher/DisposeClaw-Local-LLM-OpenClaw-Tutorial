@@ -1,0 +1,85 @@
+{
+  "models": {
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://prompt-logger:11434",
+        "models": [
+          {
+            "id": "qwen2.5-coder:3b",
+            "name": "Qwen 2.5 Coder 3B",
+            "contextWindow": 16000
+          },
+          {
+            "id": "qwen2.5-coder:7b",
+            "name": "Qwen 2.5 Coder 7B",
+            "contextWindow": 32768
+          },
+          {
+            "id": "qwen2.5-coder:1.5b",
+            "name": "Qwen 2.5 Coder 1.5B",
+            "contextWindow": 16000
+          },
+          {
+            "id": "qwen3:4b",
+            "name": "Qwen 3 4B",
+            "contextWindow": 16000
+          },
+          {
+            "id": "llama3.2:3b",
+            "name": "Llama 3.2 3B",
+            "contextWindow": 16000
+          },
+          {
+            "id": "phi4-mini:3.8b",
+            "name": "Phi-4 Mini 3.8B",
+            "contextWindow": 16000
+          },
+          {
+            "id": "gemma3:4b",
+            "name": "Gemma 3 4B",
+            "contextWindow": 16000
+          },
+          {
+            "id": "deepseek-coder-v2:lite",
+            "name": "DeepSeek Coder V2 Lite",
+            "contextWindow": 16000
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "ollama/qwen2.5-coder:7b"
+      },
+      "models": {
+        "ollama/qwen2.5-coder:3b": {},
+        "ollama/qwen2.5-coder:7b": {},
+        "ollama/qwen2.5-coder:1.5b": {},
+        "ollama/qwen3:4b": {},
+        "ollama/llama3.2:3b": {},
+        "ollama/phi4-mini:3.8b": {},
+        "ollama/gemma3:4b": {},
+        "ollama/deepseek-coder-v2:lite": {}
+      },
+      "memorySearch": {
+        "enabled": false
+      },
+      "timeoutSeconds": 600,
+      "skipBootstrap": true
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "groupPolicy": "open",
+      "streaming": "partial"
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": false
+  }
+}

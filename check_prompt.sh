@@ -1,0 +1,1 @@
+docker exec -it prompt-logger cat /tmp/prompt_log.txt

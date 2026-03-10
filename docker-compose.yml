@@ -1,0 +1,81 @@
+version: "3.8"
+
+services:
+  openclaw:
+    image: ghcr.io/openclaw/openclaw:latest
+    container_name: openclaw
+    restart: unless-stopped
+    # Required for OpenClaw's sandboxing (if used)
+    # privileged: true
+    volumes:
+      - ./openclaw:/home/node/.openclaw
+      - openclaw_workspace:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - prompt-logger
+      - text-to-image
+
+  prompt-logger:
+    image: alpine/socat:latest
+    container_name: prompt-logger
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    command: tcp-listen:11434,fork,reuseaddr system:'tee -a /tmp/prompt_log.txt | socat - "tcp\:ollama\:11434" | tee -a /tmp/prompt_log.txt'
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_KEEP_ALIVE=-1
+      - OLLAMA_NUM_PARALLEL=1
+
+  ollama-pull:
+    image: alpine/curl:latest
+    container_name: ollama-pull
+    restart: "no"
+    depends_on:
+      - ollama
+    entrypoint: /bin/sh -c "sleep 5 && curl -X POST http://ollama:11434/api/pull -d '{\"name\":\"qwen2.5-coder:7b\"}' && echo 'Model pulled successfully'"
+
+  chat-webui:
+    build:
+      context: ./chat-webui
+    container_name: chat-webui
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8888:80"
+    depends_on:
+      - prompt-logger
+
+  text-to-image:
+    build:
+      context: ./text-to-image
+    container_name: text-to-image
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9998:9998"
+
+  config-webui:
+    build:
+      context: ./config-webui
+    container_name: config-webui
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9999:9999"
+    volumes:
+      - ./openclaw/openclaw.json:/config/openclaw.json
+
+volumes:
+  openclaw_workspace:
+  ollama_data:

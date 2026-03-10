@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local_Chat_UI - Setup</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Local_Chat_UI Setup</h1>
+            <p>Connect your local open-source AI agent to Telegram</p>
+        </header>
+
+        <section class="card instructions">
+            <h2>Step 1: Create a Telegram Bot</h2>
+            <ol>
+                <li>Open the Telegram app and search for <strong>@BotFather</strong> (the official bot with a blue checkmark).</li>
+                <li>Send the message <code>/newbot</code> to start the creation process.</li>
+                <li>Choose a display name for your bot (e.g., <em>My Local AI</em>).</li>
+                <li>Choose a unique username that ends in "bot" (e.g., <em>MyLocalAIBot</em>).</li>
+                <li>BotFather will reply with an <strong>API Token</strong>. It looks like <code>123456789:ABCdefGHIjklMNOpqrsTUVwxyz</code>. Copy this token.</li>
+            </ol>
+            <div class="tip">💡 <strong>Tip:</strong> Keep this token secret! Do not share it publicly.</div>
+        </section>
+
+        <section class="card token-entry">
+            <h2>Step 2: Enter API Token</h2>
+            <p>We use a secure command-line script to inject the token directly into the running AI container.</p>
+            <div class="code-block">
+                cd /home/student/App_Deploy<br>
+                chmod +x enter_api.sh<br>
+                ./enter_api.sh
+            </div>
+        </section>
+
+        <section class="card pairing">
+            <h2>Step 3: Pairing Approval</h2>
+            <p>After saving the token, send any message to your new bot on Telegram. Then, you need to approve the pairing request.</p>
+            <p>Run the following commands manually to view and approve the connection:</p>
+            <div class="code-block">
+                <span style="color: #888;"># 1. Restart the container to apply the new key</span><br>
+                docker restart openclaw<br><br>
+                <span style="color: #888;"># 2. List pending pairing requests from your device</span><br>
+                docker exec -it openclaw openclaw pairing list telegram<br><br>
+                <span style="color: #888;"># 3. Approve your device connection code (replace &lt;CODE&gt;)</span><br>
+                docker exec -it openclaw openclaw pairing approve telegram &lt;CODE&gt;
+            </div>
+        </section>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>

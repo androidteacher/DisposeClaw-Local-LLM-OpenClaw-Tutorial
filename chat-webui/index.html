@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local_Chat_UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg: #050810;
+      --surface: rgba(13, 19, 36, 0.7);
+      --surface2: rgba(20, 30, 55, 0.85);
+      --accent: #00d4ff;
+      --accent-glow: rgba(0, 212, 255, 0.18);
+      --accent2: #0066ff;
+      --text: #e8f4ff;
+      --text-muted: #5a7a9a;
+      --user-bubble: #1a2333;
+      --bot-bubble: rgba(10, 15, 30, 0.95);
+      --border: rgba(0, 212, 255, 0.15);
+      --radius: 14px;
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --green: #00c853;
+      --red: #ff5252;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(0, 212, 255, 0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--glass-shadow);
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--accent);
+      filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .header-links a:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    /* Model selector dropdown */
+    .model-selector {
+      position: relative;
+    }
+
+    .model-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .model-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    .model-btn .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .model-btn .dot.none { background: var(--red); }
+
+    .model-btn .arrow {
+      font-size: 0.6rem;
+      margin-left: 4px;
+    }
+
+    .model-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 380px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    .model-dropdown.open { display: block; }
+
+    .model-section-title {
+      padding: 10px 16px 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .model-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      transition: background 0.15s;
+    }
+
+    .model-item:hover { background: rgba(255,255,255,0.03); }
+
+    .model-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .model-item-left .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .model-item-left .dot.installed { background: var(--green); }
+    .model-item-left .dot.available { background: var(--text-muted); }
+
+    .model-info {
+      min-width: 0;
+    }
+
+    .model-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .model-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .model-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .model-action-btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .model-action-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .model-action-btn.use {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .model-action-btn.use:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .model-action-btn.use.active {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+    }
+
+    .model-action-btn.remove {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .model-action-btn.remove:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .model-action-btn.install {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .model-action-btn.install:hover {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .model-action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .model-progress {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      padding: 2px 8px;
+    }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    #chat::-webkit-scrollbar { width: 6px; }
+    #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+    .msg {
+      display: flex;
+      gap: 16px;
+      max-width: 85%;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .bubble {
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      line-height: 1.55;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .user .bubble {
+      background: var(--accent2);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.1);
+      border-bottom-right-radius: 2px;
+    }
+
+    .bot .bubble {
+      background: var(--bot-bubble);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom-left-radius: 2px;
+      box-shadow: var(--glass-shadow);
+    }
+
+    .msg.bot .bubble p { margin-bottom: 12px; }
+    .msg.bot .bubble p:last-child { margin-bottom: 0; }
+
+    .msg.bot .bubble pre {
+      background: #000;
+      padding: 14px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      border: 1px solid var(--border);
+    }
+
+    .msg.bot .bubble code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+
+    #input-bar {
+      padding: 16px 24px 24px;
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .input-container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      background: var(--surface2);
+      padding: 10px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      resize: none;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      max-height: 200px;
+      min-height: 48px;
+    }
+
+    #btn {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 0 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    #btn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+    }
+
+    #btn:disabled { background: var(--text-muted); cursor: not-allowed; }
+
+    .spinner-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 700px) {
+      header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+      .header-links { display: none; }
+      .model-dropdown { min-width: 300px; right: -20px; }
+      #chat { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 7h2v2h-2zm0 4h2v6h-2z"/>
+      </svg>
+      <h1>Local_Chat_UI</h1>
+    </div>
+    <div class="header-right">
+      <div class="model-selector">
+        <button class="model-btn" id="modelBtn" onclick="toggleDropdown()">
+          <span class="dot" id="modelDot"></span>
+          <span id="modelLabel">Loading...</span>
+          <span class="arrow">&#9660;</span>
+        </button>
+        <div class="model-dropdown" id="modelDropdown">
+          <div id="modelList"></div>
+        </div>
+      </div>
+      <div class="header-links">
+        <a href="/api/tags" target="_blank">API</a>
+        <a href="http://localhost:9999" target="_blank">Telegram</a>
+      </div>
+    </div>
+  </header>
+
+  <div id="chat"></div>
+
+  <div id="input-bar">
+    <div class="input-container">
+      <textarea id="input" rows="1" placeholder="Type a message..."></textarea>
+      <button id="btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('input');
+    const btn = document.getElementById('btn');
+    const chat = document.getElementById('chat');
+    const modelBtn = document.getElementById('modelBtn');
+    const modelDot = document.getElementById('modelDot');
+    const modelLabel = document.getElementById('modelLabel');
+    const modelDropdown = document.getElementById('modelDropdown');
+    const modelList = document.getElementById('modelList');
+
+    let busy = false;
+    let activeModel = '';
+    let conversationHistory = [];
+    let installedModels = [];
+    let pullingModels = {};
+
+    // Catalog of models available for download
+    const MODEL_CATALOG = [
+      { id: 'qwen2.5-coder:3b',  name: 'Qwen 2.5 Coder 3B',  size: '2.0 GB', desc: 'Fast, good for code tasks' },
+      { id: 'qwen2.5-coder:7b',  name: 'Qwen 2.5 Coder 7B',  size: '4.7 GB', desc: 'Stronger reasoning, slower' },
+      { id: 'qwen2.5-coder:1.5b', name: 'Qwen 2.5 Coder 1.5B', size: '1.0 GB', desc: 'Fastest, basic tasks' },
+      { id: 'qwen3:4b',          name: 'Qwen 3 4B',           size: '2.6 GB', desc: 'General purpose, balanced' },
+      { id: 'llama3.2:3b',       name: 'Llama 3.2 3B',        size: '2.0 GB', desc: 'Meta, general purpose' },
+      { id: 'phi4-mini:3.8b',    name: 'Phi-4 Mini 3.8B',     size: '2.5 GB', desc: 'Microsoft, strong reasoning' },
+      { id: 'gemma3:4b',         name: 'Gemma 3 4B',          size: '3.3 GB', desc: 'Google, general purpose' },
+      { id: 'deepseek-coder-v2:lite', name: 'DeepSeek Coder V2 Lite', size: '8.9 GB', desc: 'Excellent coder, large' },
+    ];
+
+    // --- Model Management ---
+
+    async function fetchInstalledModels() {
+      try {
+        const res = await fetch('/api/tags');
+        const data = await res.json();
+        installedModels = (data.models || []).map(m => ({
+          id: m.name,
+          name: m.name,
+          size: formatBytes(m.size),
+          paramSize: m.details?.parameter_size || '',
+          family: m.details?.family || ''
+        }));
+      } catch {
+        installedModels = [];
+      }
+      // Auto-select first installed model if none active
+      if (!activeModel && installedModels.length > 0) {
+        activeModel = installedModels[0].id;
+      }
+      updateModelButton();
+      renderModelList();
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return '?';
+      const gb = bytes / (1024 * 1024 * 1024);
+      return gb >= 1 ? gb.toFixed(1) + ' GB' : (bytes / (1024 * 1024)).toFixed(0) + ' MB';
+    }
+
+    function updateModelButton() {
+      if (activeModel) {
+        modelLabel.textContent = activeModel;
+        modelDot.className = 'dot';
+      } else {
+        modelLabel.textContent = 'No model';
+        modelDot.className = 'dot none';
+      }
+    }
+
+    function toggleDropdown() {
+      modelDropdown.classList.toggle('open');
+      if (modelDropdown.classList.contains('open')) {
+        fetchInstalledModels();
+      }
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.model-selector')) {
+        modelDropdown.classList.remove('open');
+      }
+    });
+
+    function renderModelList() {
+      const installedIds = new Set(installedModels.map(m => m.id));
+      let html = '';
+
+      // Installed models
+      if (installedModels.length > 0) {
+        html += '<div class="model-section-title">Installed</div>';
+        for (const m of installedModels) {
+          const isActive = m.id === activeModel;
+          html += `
+            <div class="model-item">
+              <div class="model-item-left">
+                <span class="dot installed"></span>
+                <div class="model-info">
+                  <div class="model-name">${esc(m.id)}</div>
+                  <div class="model-meta">${esc(m.size)}${m.paramSize ? ' &middot; ' + esc(m.paramSize) : ''}</div>
+                </div>
+              </div>
+              <div class="model-actions">
+                <button class="model-action-btn use ${isActive ? 'active' : ''}"
+                  onclick="selectModel('${esc(m.id)}')">${isActive ? 'Active' : 'Use'}</button>
+                <button class="model-action-btn remove"
+                  onclick="removeModel('${esc(m.id)}', this)">Remove</button>
+              </div>
+            </div>`;
+        }
+      }
+
+      // Available (not installed)
+      const available = MODEL_CATALOG.filter(m => !installedIds.has(m.id));
+      if (available.length > 0) {
+        html += '<div class="model-section-title">Available to Download</div>';
+        for (const m of available) {
+          const pulling = pullingModels[m.id];
+          html += `
+            <div class="model-item">
+              <div class="model-item-left">
+                <span class="dot available"></span>
+                <div class="model-info">
+                  <div class="model-name">${esc(m.id)}</div>
+                  <div class="model-meta">${esc(m.size)} &middot; ${esc(m.desc)}</div>
+                </div>
+              </div>
+              <div class="model-actions">
+                ${pulling
+                  ? `<span class="model-progress">${esc(pulling)}</span>`
+                  : `<button class="model-action-btn install"
+                      onclick="installModel('${esc(m.id)}', this)">Install</button>`
+                }
+              </div>
+            </div>`;
+        }
+      }
+
+      if (!html) {
+        html = '<div style="padding:20px;text-align:center;color:var(--text-muted)">No models found. Is Ollama running?</div>';
+      }
+
+      modelList.innerHTML = html;
+    }
+
+    function selectModel(id) {
+      activeModel = id;
+      conversationHistory = [];
+      updateModelButton();
+      renderModelList();
+    }
+
+    async function removeModel(id, btnEl) {
+      if (!confirm(`Remove ${id}? This will delete the model from disk.`)) return;
+      btnEl.disabled = true;
+      btnEl.textContent = '...';
+      try {
+        const res = await fetch('/api/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: id })
+        });
+        if (!res.ok) throw new Error('Failed');
+        if (activeModel === id) activeModel = '';
+        await fetchInstalledModels();
+      } catch (err) {
+        alert('Failed to remove model: ' + err.message);
+        btnEl.disabled = false;
+        btnEl.textContent = 'Remove';
+      }
+    }
+
+    async function installModel(id, btnEl) {
+      btnEl.disabled = true;
+      pullingModels[id] = 'Starting...';
+      renderModelList();
+
+      try {
+        const res = await fetch('/api/pull', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: id, stream: true })
+        });
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const obj = JSON.parse(line);
+              if (obj.total && obj.completed) {
+                const pct = Math.round((obj.completed / obj.total) * 100);
+                pullingModels[id] = pct + '%';
+              } else if (obj.status) {
+                pullingModels[id] = obj.status.length > 25 ? obj.status.slice(0, 25) + '...' : obj.status;
+              }
+              renderModelList();
+            } catch {}
+          }
+        }
+
+        delete pullingModels[id];
+        await fetchInstalledModels();
+        if (!activeModel) {
+          activeModel = id;
+          updateModelButton();
+        }
+      } catch (err) {
+        delete pullingModels[id];
+        alert('Failed to install model: ' + err.message);
+        renderModelList();
+      }
+    }
+
+    function esc(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // --- Chat ---
+
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+    btn.addEventListener('click', send);
+
+    async function send() {
+      const text = input.value.trim();
+      if (!text || busy) return;
+      if (!activeModel) {
+        appendMsg('bot', 'No model selected. Open the model dropdown and select or install one.');
+        return;
+      }
+
+      busy = true;
+      btn.disabled = true;
+      appendMsg('user', text);
+      input.value = '';
+      input.style.height = 'auto';
+
+      const spinnerEl = appendSpinner();
+      conversationHistory.push({ role: 'user', content: text });
+
+      // Keep last 20 turns
+      if (conversationHistory.length > 40) {
+        conversationHistory = conversationHistory.slice(conversationHistory.length - 40);
+      }
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: activeModel,
+            messages: conversationHistory,
+            stream: false
+          })
+        });
+
+        if (!res.ok) throw new Error('Server returned ' + res.status);
+        const data = await res.json();
+        const responseText = data.message?.content || '(no response)';
+        conversationHistory.push({ role: 'assistant', content: responseText });
+
+        spinnerEl.remove();
+        appendMsg('bot', responseText);
+      } catch (err) {
+        spinnerEl.remove();
+        appendMsg('bot', 'Error: ' + err.message);
+        if (conversationHistory.length && conversationHistory[conversationHistory.length - 1].role === 'user') {
+          conversationHistory.pop();
+        }
+      } finally {
+        busy = false;
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    function appendMsg(role, text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + role;
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = role === 'user' ? 'You' : 'AI';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      if (role === 'bot') {
+        bubble.innerHTML = marked.parse(text);
+      } else {
+        bubble.textContent = text;
+      }
+
+      wrap.append(avatar, bubble);
+      chat.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+      return wrap;
+    }
+
+    function appendSpinner() {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg bot';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = 'AI';
+
+      const sw = document.createElement('div');
+      sw.className = 'spinner-wrap';
+      sw.innerHTML = '<div class="spinner"></div><span>Thinking...</span>';
+
+      wrap.append(avatar, sw);
+      chat.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+      return wrap;
+    }
+
+    // Init
+    fetchInstalledModels();
+  </script>
+</body>
+
+</html>
