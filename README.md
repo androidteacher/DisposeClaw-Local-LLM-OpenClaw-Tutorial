@@ -1,7 +1,7 @@
 # DisposeClaw: A Claw that Won't Work Because Your VM is Too Weak
 
 <p align="center">
-  <img src="images/opensmash.jpg" alt="DisposeClaw OpenSmash" />
+  <img src="images/opensmash.jpg" alt="DisposeClaw OpenSmash" width="400" />
 </p>
 
 [**📖 Lesson Plan Here**](#)
