@@ -10,8 +10,10 @@
 
 * **Will OpenClaw crush your CPU?**
   * Yes!
-* **Will you learn a whole lot about OpenClaw?**
+* **Will you learn a whole lot about OpenClaw as it does this and you analyze why?**
   * Also Yes!
+* **Will you think twice before sending simple inquiries to 3rd party APIs using OpenClaw after working through this lesson?**
+  * 100 Percent Yes!
 
 ## Overview
 - **Easy `setup.sh` and `delete.sh` to start and delete the project**
