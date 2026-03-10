@@ -1,9 +1,14 @@
 # DisposeClaw: A Claw that Won't Work Because Your VM is Too Weak
 
+<p align="center">
+  <img src="images/opensmash.jpg" alt="DisposeClaw OpenSmash" />
+</p>
+
 [**📖 Lesson Plan Here**](#)
 
 **Learning Why and How OpenClaw Impacts Your costs when using 3rd party APIs.**
-
+**Will OpenClaw crush your CPU? --Yes!**
+**Will you learn a whole lot about OpenClaw? --Also Yes!**
 ## Overview
 - **Easy `setup.sh` and `delete.sh` to start and delete the project**
   - *You are installing LLMs so you'll need 16GB RAM and a few spare CPU Cores. Be patient during the install. It takes a few minutes.*
