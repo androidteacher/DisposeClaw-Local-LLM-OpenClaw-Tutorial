@@ -2,7 +2,7 @@
 
 [**📖 Lesson Plan Here**](#)
 
-**Learning Why and How this Impacts Your costs when using 3rd party APIs.**
+**Learning Why and How OpenClaw Impacts Your costs when using 3rd party APIs.**
 
 ## Overview
 - **Easy `setup.sh` and `delete.sh` to start and delete the project**
