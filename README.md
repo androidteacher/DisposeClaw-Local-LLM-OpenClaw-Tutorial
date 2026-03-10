@@ -6,9 +6,12 @@
 
 [**📖 Lesson Plan Here**](#)
 
-**Learning Why and How OpenClaw Impacts Your costs when using 3rd party APIs.**<br>
-**Will OpenClaw crush your CPU? --Yes!**<br>
-**Will you learn a whole lot about OpenClaw? --Also Yes!**
+**Learning Why and How OpenClaw Impacts Your costs when using 3rd party APIs.**
+
+* **Will OpenClaw crush your CPU?**
+  * Yes!
+* **Will you learn a whole lot about OpenClaw?**
+  * Also Yes!
 
 ## Overview
 - **Easy `setup.sh` and `delete.sh` to start and delete the project**
