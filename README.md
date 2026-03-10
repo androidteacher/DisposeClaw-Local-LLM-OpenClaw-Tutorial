@@ -4,6 +4,12 @@
   <img src="images/opensmash.jpg" alt="DisposeClaw OpenSmash" width="400" />
 </p>
 
+## Requirements
+- Kali Linux (Recommended)
+- Docker installed
+- 16GB RAM
+- A few CPU Cores
+
 [**📖 Lesson Plan Here**](#)
 
 **Learning Why and How OpenClaw Impacts Your costs when using 3rd party APIs.**
