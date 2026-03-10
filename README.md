@@ -37,16 +37,16 @@
 
 ## Test the Raw LLM (Chat WebUI)
 
-![Chat WebUI](images/chat-ui.png)
-
 Before linking the agent, you should test the raw LLM to see its baseline speed.
 1. Navigate to **http://localhost:8888**
 2. Type "hello" and hit send.
 3. You should find that this works smoothly and a response is returned in a few seconds. This demonstrates the speed and small token size of a *simple* prompt.
 
+![Chat WebUI](images/chat-ui.png)
+
 ## Telegram Setup Walkthrough
 
-![Telegram Setup](images/telegram.png)
+<img src="images/telegram.png" alt="Telegram Setup" width="300" />
 
 If you haven't linked the agent to Telegram yet, the system provides a Config WebUI to guide you.
 1. Navigate to **http://localhost:9999**
