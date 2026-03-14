@@ -57,15 +57,7 @@ services:
       - "127.0.0.1:8888:80"
     depends_on:
       - prompt-logger
-
-  text-to-image:
-    build:
-      context: ./text-to-image
-    container_name: text-to-image
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:9998:9998"
-
+ 
   config-webui:
     build:
       context: ./config-webui
