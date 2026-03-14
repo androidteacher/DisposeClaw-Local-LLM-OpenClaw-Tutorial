@@ -74,8 +74,8 @@ echo "Note: This is cool, but absolutely not necessary for this project."
 echo "Warning: Building this image takes 5-15 mins to bake in the AI model."
 if prompt_user "→ Install Text-to-Image?" false; then
     echo -e "\e[1;34mBE PATIENT: IT IS WORKING!\e[0m"
-    docker compose build text-to-image
-    docker compose up -d text-to-image
+#    docker compose build text-to-image
+#    docker compose up -d text-to-image
 else
     echo "Skipping Text-to-Image..."
 fi
