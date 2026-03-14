@@ -108,7 +108,7 @@ echo -e "\e[1;32m│  ✓ Services deployment sequence completed!             �
 echo -e "\e[1;32m│                                                        │\e[0m"
 echo -e "\e[1;32m│  Config/Telegram:    http://localhost:9999             │\e[0m"
 echo -e "\e[1;32m│  LLM Web Chat:       http://localhost:8888             │\e[0m"
-echo -e "\e[1;32m│  Text-to-Image:      http://localhost:9998             │\e[0m"
+echo -e "\e[1;32m│                                                        │\e[0m"
 echo -e "\e[1;32m└────────────────────────────────────────────────────────┘\e[0m"
 echo ""
 echo "Note: If you run into memory issues, ensure your VM has at least 16GB of RAM."
