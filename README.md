@@ -10,7 +10,7 @@
 - 16GB RAM
 - A few CPU Cores
 
-[**📖 Lesson Plan Here**](#)
+[**📖 Lesson Plan Here**](https://www.notion.so/Inside-OpenClaw-How-to-Build-Hack-and-Secure-Your-AI-Agent-3224c8e523768080bcdbe0661a560c40?source=copy_link)
 
 **Learning Why and How OpenClaw Impacts Your costs when using 3rd party APIs.**
 
